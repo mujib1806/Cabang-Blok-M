@@ -1435,9 +1435,9 @@
   appId: "1:1035612885691:web:66a4f04224010bebb0cf9e"
 };
 
-    if (firebaseConfig.apiKey !== "AIzaSyYOUR_API_KEY_HERE") { 
-        firebase.initializeApp(firebaseConfig); 
-    }
+   if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
     const db = (firebase.apps && firebase.apps.length > 0) ? firebase.firestore() : null;
 
     const configSistem = firebase.app().options; 
@@ -1516,10 +1516,11 @@
         setTimeout(() => { banner.style.display = 'none'; }, 3000);
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
+   document.addEventListener('DOMContentLoaded', () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                let savedUser = localStorage.getItem('baksoUserBlokMBlokM');
+                // UBAH DISINI: Samakan menjadi 'baksoUserBlokM'
+                let savedUser = localStorage.getItem('baksoUserBlokM'); 
                 if (savedUser) { 
                     currentUser = JSON.parse(savedUser); 
                     bukaLayarAplikasi(); 
@@ -1532,18 +1533,20 @@
                         } else {
                             currentUser = { nama: "Kasir", role: "kasir", hp: noHp, email: user.email };
                         }
-                        localStorage.setItem('baksoUserBlokMBlokM', JSON.stringify(currentUser));
+                        // UBAH DISINI JUGA
+                        localStorage.setItem('baksoUserBlokM', JSON.stringify(currentUser)); 
                         bukaLayarAplikasi();
                     }).catch(err => { console.error("Gagal menarik data user:", err); });
                 }
             } else {
                 document.getElementById('loginScreen').style.display = 'flex'; 
                 document.getElementById('appScreen').style.display = 'none';
-                localStorage.removeItem('baksoUserBlokMBlokM'); 
+                // UBAH DISINI JUGA
+                localStorage.removeItem('baksoUserBlokM'); 
             }
         });
     });
-
+       
     function showToast(message) {
         const toast = document.getElementById('toastNotif');
         toast.innerHTML = message || '✅ Tersimpan!'; toast.classList.add('show');
