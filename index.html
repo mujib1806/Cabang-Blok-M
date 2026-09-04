@@ -2013,7 +2013,7 @@
         if (needsUpdateUI && document.activeElement && document.activeElement.tagName !== 'INPUT') { renderTabelMatriks(); loadKasMasukUI(); updateKalkulasi(); }
     }
 
-    function syncStokDenganMaster(tgl) { 
+  function syncStokDenganMaster(tgl) { 
         if (!dbStok[tgl]) { 
             dbStok[tgl] = masterProduk.map(function(p) { 
                 return Object.assign({}, p, { awal: "", tambah: "", kurang: "", sisa: "" }); 
@@ -2036,6 +2036,12 @@
             }); 
             dbStok[tgl] = newStokList; 
         } 
+
+        // SIMPAN PERUBAHAN KE FIRESTORE STOK HARIAN AGAR TERSIMPAN PERMANEN
+        if (typeof db !== 'undefined' && tgl) {
+            db.collection('stokHarian').doc(tgl).set({ items: dbStok[tgl] }, { merge: true })
+              .catch(function(err) { console.error("Gagal sinkron stok harian:", err); });
+        }
     }
 
     function simpanStokKeFirebase() { 
