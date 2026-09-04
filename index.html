@@ -2635,29 +2635,29 @@ function hapusMutasiKas(docId) {
         document.getElementById('modalKelolaProduk').classList.add('active');
     }
     
-    function hapusProdukMaster(i) { 
-        if(confirm("Hapus produk dari master?")) { 
-            const namaProd = masterProduk[i]?.nama || 'Produk';
+    function hapusProdukMaster(namaProduk) { 
+        if(confirm(`Hapus produk "${namaProduk}" dari master?`)) { 
+            // Cari posisi produk berdasarkan namanya, bukan nomor indeks (i)
+            const index = masterProduk.findIndex(p => p.nama === namaProduk);
             
-            // Hapus data dari array lokal berdasarkan indeks
-            masterProduk.splice(i, 1); 
-            
-            // Catat aktivitas ke log
-            catatAktivitas('Master Produk', `Menghapus produk "${namaProd}" dari daftar Master Produk`);
-            
-            // Simpan perubahan ke Firebase Firestore secara langsung
-            if(db) {
-                db.collection('appData').doc('masterProduk').set({ list: masterProduk })
-                  .then(() => {
-                      // Render ulang tabel setelah database sukses diperbarui
-                      renderTabelMasterProduk(); 
-                  })
-                  .catch((err) => {
-                      console.error("Gagal menghapus dari database:", err);
-                      alert("Gagal menghapus produk dari database. Coba lagi.");
-                  });
-            } else {
-                renderTabelMasterProduk();
+            if (index > -1) {
+                masterProduk.splice(index, 1); 
+                
+                catatAktivitas('Master Produk', `Menghapus produk "${namaProduk}" dari daftar Master Produk`);
+                
+                if(db) {
+                    db.collection('appData').doc('masterProduk').set({ list: masterProduk })
+                      .then(() => {
+                          console.log("Master produk berhasil diperbarui di database.");
+                          renderTabelMasterProduk(); 
+                      })
+                      .catch((err) => {
+                          console.error("Gagal menghapus dari database:", err);
+                          alert("Gagal menghapus produk dari database.");
+                      });
+                } else {
+                    renderTabelMasterProduk();
+                }
             }
         } 
     }
