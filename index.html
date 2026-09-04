@@ -2638,10 +2638,28 @@ function hapusMutasiKas(docId) {
     function hapusProdukMaster(i) { 
         if(confirm("Hapus produk dari master?")) { 
             const namaProd = masterProduk[i]?.nama || 'Produk';
+            
+            // 1. Hapus dari array lokal
             masterProduk.splice(i, 1); 
+            
+            // 2. Catat aktivitas
             catatAktivitas('Master Produk', `Menghapus produk "${namaProd}" dari daftar Master Produk`);
-            if(db) db.collection('appData').doc('masterProduk').set({ list: masterProduk }); 
-            renderTabelMasterProduk(); 
+            
+            // 3. Kirim ke Firebase dan TUNGGU sampai benar-benar tersimpan (.then)
+            if(db) {
+                db.collection('appData').doc('masterProduk').set({ list: masterProduk })
+                  .then(() => {
+                      console.log("Berhasil dihapus permanen di database.");
+                      // 4. Render ulang tabel HANYA SETELAH server sukses menyimpan
+                      renderTabelMasterProduk(); 
+                  })
+                  .catch((error) => {
+                      console.error("Gagal menghapus dari database: ", error);
+                      alert("Gagal menyimpan ke database. Periksa koneksi internet Anda.");
+                  });
+            } else {
+                renderTabelMasterProduk();
+            }
         } 
     }
     function hapusProduk(i) { if(isDataLocked(document.getElementById('tglOps').value)) return; if(confirm("Sembunyikan produk ini dari daftar hari ini?")) { const tgl = document.getElementById('tglOps').value; dbStok[tgl].splice(i,1); if(db) db.collection('stokHarian').doc(tgl).set({items: dbStok[tgl]}); renderTabelMatriks(); updateKalkulasi(); } }
