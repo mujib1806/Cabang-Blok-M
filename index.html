@@ -2610,18 +2610,28 @@ function hapusMutasiKas(docId) {
     }
     
  function editProdukMaster(i) {
-        // Mengembalikan fungsi edit menggunakan indeks angka seperti semula agar tidak error
         const produk = masterProduk[i];
         if (!produk) return;
         
-        // Sesuaikan baris di bawah ini dengan logika pop-up edit lama Anda
-        // Contoh:
-        document.getElementById('namaProdukInput').value = produk.nama;
-        document.getElementById('hargaProdukInput').value = produk.harga || '';
-        // Simpan indeks yang sedang diedit
+        // Cari elemen form satu per satu dengan aman (jika tidak ada, dilewati agar tidak error)
+        const elNama = document.getElementById('editNamaProduk') || document.getElementById('namaProduk');
+        const elHarga = document.getElementById('editHargaProduk') || document.getElementById('hargaProduk');
+        const elGudang = document.getElementById('editStokGudang') || document.getElementById('stokGudang');
+        const elBatas = document.getElementById('editBatasMinimum') || document.getElementById('batasMinimum');
+        
+        if (elNama) elNama.value = produk.nama || '';
+        if (elHarga) elHarga.value = produk.harga || '';
+        if (elGudang) elGudang.value = produk.stokGudang || '';
+        if (elBatas) elBatas.value = produk.batasMinimum || '';
+        
         window.editingIndex = i;
-        // Buka modal edit Anda
-        openModalEdit();
+        
+        // Coba buka modal jika fungsinya ada
+        if (typeof openModalEdit === 'function') {
+            openModalEdit();
+        } else if (typeof $('#modalEdit').modal === 'function') {
+            $('#modalEdit').modal('show');
+        }
     }
 
     function hapusProdukMaster(namaProduk) { 
