@@ -2639,26 +2639,26 @@ function hapusMutasiKas(docId) {
         if(confirm("Hapus produk dari master?")) { 
             const namaProd = masterProduk[i]?.nama || 'Produk';
             
-            // Hapus dari array lokal
+            // Hapus data dari array lokal berdasarkan indeks
             masterProduk.splice(i, 1); 
             
-            // Catat aktivitas
+            // Catat aktivitas ke log
             catatAktivitas('Master Produk', `Menghapus produk "${namaProd}" dari daftar Master Produk`);
             
-            // Simpan ke Firebase dengan menggunakan async/await atau penanganan .then() agar sinkron
+            // Simpan perubahan ke Firebase Firestore secara langsung
             if(db) {
                 db.collection('appData').doc('masterProduk').set({ list: masterProduk })
                   .then(() => {
-                      console.log("Master produk berhasil diperbarui di database.");
+                      // Render ulang tabel setelah database sukses diperbarui
+                      renderTabelMasterProduk(); 
                   })
                   .catch((err) => {
-                      console.error("Gagal menyimpan ke database:", err);
-                      alert("Gagal menghapus produk dari database.");
+                      console.error("Gagal menghapus dari database:", err);
+                      alert("Gagal menghapus produk dari database. Coba lagi.");
                   });
+            } else {
+                renderTabelMasterProduk();
             }
-            
-            // Render ulang tabel di layar
-            renderTabelMasterProduk(); 
         } 
     }
     
