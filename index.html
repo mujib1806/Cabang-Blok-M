@@ -3346,11 +3346,22 @@ function terapkanFilterReseller() {
         }
     }
 
-    function catatAktivitas(aksi, detail) {
+   function catatAktivitas(aksi, detail) {
         if(!db) return;
-        const namaUser = currentUser ? currentUser.nama : "Sistem";
+        
+        // Memastikan currentUser.nama benar-benar ada. Jika tidak, paksa menjadi "Sistem"
+        const namaUser = (typeof currentUser !== 'undefined' && currentUser && currentUser.nama) 
+                            ? currentUser.nama 
+                            : "Sistem";
+                            
         const waktuWIB = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
-        db.collection('logAktivitas').add({ waktu: waktuWIB, user: namaUser, keterangan: `[${aksi}] ${detail}`, timestamp: firebase.firestore.FieldValue.serverTimestamp() }).catch(err => console.error("Gagal mencatat log:", err));
+        
+        db.collection('logAktivitas').add({ 
+            waktu: waktuWIB, 
+            user: namaUser, 
+            keterangan: `[${aksi}] ${detail}`, 
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+        }).catch(err => console.error("Gagal mencatat log:", err));
     }
 
     function muatDataRiwayat() {
