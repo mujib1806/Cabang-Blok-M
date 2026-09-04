@@ -2609,11 +2609,11 @@ function hapusMutasiKas(docId) {
         });
     }
     
- function editProdukMaster(i) {
+function editProdukMaster(i) {
         const produk = masterProduk[i];
         if (!produk) return;
         
-        // Cari elemen form satu per satu dengan aman (jika tidak ada, dilewati agar tidak error)
+        // Cari elemen form satu per satu dengan aman
         const elNama = document.getElementById('editNamaProduk') || document.getElementById('namaProduk');
         const elHarga = document.getElementById('editHargaProduk') || document.getElementById('hargaProduk');
         const elGudang = document.getElementById('editStokGudang') || document.getElementById('stokGudang');
@@ -2626,11 +2626,9 @@ function hapusMutasiKas(docId) {
         
         window.editingIndex = i;
         
-        // Coba buka modal jika fungsinya ada
+        // Panggil fungsi pembuka modal bawaan aplikasi Anda jika ada
         if (typeof openModalEdit === 'function') {
             openModalEdit();
-        } else if (typeof $('#modalEdit').modal === 'function') {
-            $('#modalEdit').modal('show');
         }
     }
 
