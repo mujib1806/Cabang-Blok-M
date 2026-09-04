@@ -2602,11 +2602,11 @@ function hapusMutasiKas(docId) {
                 <td style="text-align:center; font-weight:bold; color:#0284c7; background:#f0f9ff; font-size:1rem;">${gudang}</td>
                 <td style="text-align:center; font-size:0.95rem; ${warnaBatas}">${batas}</td>
                 <td style="text-align:center;">
-                    <button onclick="editProdukMaster(${i})" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Edit">✏️</button>
-                    <button onclick="hapusProdukMaster(${i})" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Hapus">🗑️</button>
-                </td>
-            </tr>`; 
-        }); 
+                 <button onclick="editProdukMaster('${p.nama}')" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Edit">✏️</button>
+    <button onclick="hapusProdukMaster('${p.nama}')" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Hapus">🗑️</button>
+</td>
+</tr>`;
+        });
     }
     
    function editProdukMaster(i) { 
@@ -2636,28 +2636,28 @@ function hapusMutasiKas(docId) {
     }
     
     function hapusProdukMaster(namaProduk) { 
-        if(confirm(`Hapus produk "${namaProduk}" dari master?`)) { 
-            // Cari posisi produk berdasarkan namanya, bukan nomor indeks (i)
-            const index = masterProduk.findIndex(p => p.nama === namaProduk);
+        if(confirm(`Yakin ingin menghapus produk "${namaProduk}" secara permanen dari Master?`)) { 
             
-            if (index > -1) {
-                masterProduk.splice(index, 1); 
-                
-                catatAktivitas('Master Produk', `Menghapus produk "${namaProduk}" dari daftar Master Produk`);
-                
-                if(db) {
-                    db.collection('appData').doc('masterProduk').set({ list: masterProduk })
-                      .then(() => {
-                          console.log("Master produk berhasil diperbarui di database.");
-                          renderTabelMasterProduk(); 
-                      })
-                      .catch((err) => {
-                          console.error("Gagal menghapus dari database:", err);
-                          alert("Gagal menghapus produk dari database.");
-                      });
-                } else {
-                    renderTabelMasterProduk();
-                }
+            // 1. Filter array lokal: Buang produk yang namanya sama persis
+            masterProduk = masterProduk.filter(p => p.nama !== namaProduk); 
+            
+            // 2. Catat aktivitas audit
+            catatAktivitas('Master Produk', `Menghapus produk "${namaProduk}" dari daftar Master Produk`);
+            
+            // 3. Simpan perubahan mutlak ke Firebase Firestore
+            if(db) {
+                db.collection('appData').doc('masterProduk').set({ list: masterProduk })
+                  .then(() => {
+                      console.log("Berhasil dihapus permanen dari database.");
+                      // 4. Render ulang tabel setelah database benar-benar merespons
+                      renderTabelMasterProduk(); 
+                  })
+                  .catch((err) => {
+                      console.error("Gagal menghapus dari database:", err);
+                      alert("Gagal menghapus produk dari database. Periksa koneksi internet.");
+                  });
+            } else {
+                renderTabelMasterProduk();
             }
         } 
     }
