@@ -1527,12 +1527,18 @@
                 } else {
                     const noHp = user.email.split('@')[0];
                     db.collection('users').doc(noHp).get().then(doc => {
-                        if (doc.exists) {
-                            currentUser = doc.data();
-                            currentUser.email = user.email;
-                        } else {
-                            currentUser = { nama: "Kasir", role: "kasir", hp: noHp, email: user.email };
-                        }
+            if (doc.exists) {
+                currentUser = doc.data();
+                currentUser.email = emailPalsu; 
+                
+                // --- TAMBAHKAN 2 BARIS INI ---
+                currentUser.hp = noHp; 
+                if (!currentUser.nama) currentUser.nama = "Pengguna " + noHp;
+                // -----------------------------
+                
+            } else {
+                currentUser = { nama: "Pengguna " + noHp, role: 'kasir', hp: noHp, email: emailPalsu };
+            }
                         // UBAH DISINI JUGA
                         localStorage.setItem('baksoUserBlokM', JSON.stringify(currentUser)); 
                         bukaLayarAplikasi();
