@@ -2609,52 +2609,42 @@ function hapusMutasiKas(docId) {
         });
     }
     
-   function editProdukMaster(i) { 
-        // 1. Pastikan daftar dropdown kategori dimuat dulu
-        const select = document.getElementById('selectKategoriProduk'); 
-        select.innerHTML = ''; 
-        daftarKategori.forEach(k => { select.innerHTML += `<option value="${k}">${k}</option>` });
+ function editProdukMaster(namaProduk) {
+        // Cari data produk berdasarkan namanya
+        const produk = masterProduk.find(p => p.nama === namaProduk);
+        if (!produk) return;
         
-        // 2. Ambil data produk yang diklik
-        const p = masterProduk[i]; 
-        document.getElementById('editIndexProduk').value = i; 
-        document.getElementById('inputNamaProduk').value = p.nama; 
-        document.getElementById('selectKategoriProduk').value = p.kategori; 
-        document.getElementById('inputModalProduk').value = p.modal; 
-        document.getElementById('inputJualProduk').value = p.jual; 
+        // Masukkan data ke form edit (sesuaikan dengan id input di HTML Anda)
+        document.getElementById('editNamaProduk').value = produk.nama;
+        document.getElementById('editHargaProduk').value = produk.harga || '';
+        document.getElementById('editStokGudang').value = produk.stokGudang || '';
+        document.getElementById('editBatasMinimum').value = produk.batasMinimum || '';
         
-        // 3. Mengisi form gudang
-        document.getElementById('inputStokGudang').value = p.stokGudang || 0;
-        document.getElementById('inputBatasMinimum').value = p.batasMinimum || 10;
+        // Simpan referensi nama lama jika diperlukan untuk proses update
+        window.currentEditingName = namaProduk;
         
-        // 4. Kalkulasi otomatis & ubah tombol
-        hitungMarginForm(); 
-        document.getElementById('btnSimpanProduk').innerText = "Update"; 
-        
-        // 5. INI YANG KETINGGALAN: Munculkan Modalnya!
-        document.getElementById('modalKelolaProduk').classList.add('active');
+        // Tampilkan modal edit Anda (sesuaikan fungsi pembuka modalnya)
+        openModalEdit();
     }
-    
+
     function hapusProdukMaster(namaProduk) { 
         if(confirm(`Yakin ingin menghapus produk "${namaProduk}" secara permanen dari Master?`)) { 
             
-            // 1. Filter array lokal: Buang produk yang namanya sama persis
+            // Hapus dari array lokal menggunakan filter
             masterProduk = masterProduk.filter(p => p.nama !== namaProduk); 
             
-            // 2. Catat aktivitas audit
             catatAktivitas('Master Produk', `Menghapus produk "${namaProduk}" dari daftar Master Produk`);
             
-            // 3. Simpan perubahan mutlak ke Firebase Firestore
             if(db) {
                 db.collection('appData').doc('masterProduk').set({ list: masterProduk })
                   .then(() => {
                       console.log("Berhasil dihapus permanen dari database.");
-                      // 4. Render ulang tabel setelah database benar-benar merespons
+                      // WAJIB: Render ulang tabel agar tampilan langsung bersih
                       renderTabelMasterProduk(); 
                   })
                   .catch((err) => {
                       console.error("Gagal menghapus dari database:", err);
-                      alert("Gagal menghapus produk dari database. Periksa koneksi internet.");
+                      alert("Gagal menghapus produk dari database.");
                   });
             } else {
                 renderTabelMasterProduk();
