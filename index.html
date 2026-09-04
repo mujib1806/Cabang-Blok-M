@@ -1710,19 +1710,21 @@
             if(dbStok[tgl]) cekDanTarikDataKemarin(tgl); 
             applyLockUI(); 
         });
-       db.collection('appData').doc('masterProduk').onSnapshot(doc => { 
+      db.collection('appData').doc('masterProduk').onSnapshot(doc => { 
     if (doc.exists && doc.data().list) { 
-        // Ambil murni apa adanya dari database Firestore
         masterProduk = doc.data().list; 
     } else { 
-        // HANYA buat data default JIKA dokumen di database benar-benar kosong melompong (pertama kali instal)
         masterProduk = [...defaultMasterProduk]; 
         db.collection('appData').doc('masterProduk').set({ list: masterProduk }); 
     } 
+    
+    // 1. Sinkronkan data tanggal yang sedang aktif dengan master terbaru
     loadDataTanggalLocal(); 
+    
+    // 2. Render ulang tabel master produk di menu pengaturan
     renderTabelMasterProduk(); 
     
-    // Tambahkan baris ini agar tabel matriks stok harian ikut menyegarkan diri
+    // 3. WAJIB ADA: Render ulang tabel matriks di halaman entry stok agar ikut berubah secara real-time
     if (typeof renderTabelMatriks === 'function') {
         renderTabelMatriks();
     }
