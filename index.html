@@ -2603,56 +2603,45 @@ function hapusMutasiKas(docId) {
                 <td style="text-align:center; font-size:0.95rem; ${warnaBatas}">${batas}</td>
                 <td style="text-align:center;">
             <button onclick="editProdukMaster(${i})" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Edit">✏️</button>
-            <button onclick="hapusProdukMaster('${p.nama}')" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Hapus">🗑️</button>
-</td>
-</tr>`;
-        });
+                    <button onclick="hapusProdukMaster(${i})" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Hapus">🗑️</button>
+                </td>
+            </tr>`; 
+        }); 
     }
     
-function editProdukMaster(i) {
-        const produk = masterProduk[i];
-        if (!produk) return;
+   function editProdukMaster(i) { 
+        // 1. Pastikan daftar dropdown kategori dimuat dulu
+        const select = document.getElementById('selectKategoriProduk'); 
+        select.innerHTML = ''; 
+        daftarKategori.forEach(k => { select.innerHTML += `<option value="${k}">${k}</option>` });
         
-        // Cari elemen form satu per satu dengan aman
-        const elNama = document.getElementById('editNamaProduk') || document.getElementById('namaProduk');
-        const elHarga = document.getElementById('editHargaProduk') || document.getElementById('hargaProduk');
-        const elGudang = document.getElementById('editStokGudang') || document.getElementById('stokGudang');
-        const elBatas = document.getElementById('editBatasMinimum') || document.getElementById('batasMinimum');
+        // 2. Ambil data produk yang diklik
+        const p = masterProduk[i]; 
+        document.getElementById('editIndexProduk').value = i; 
+        document.getElementById('inputNamaProduk').value = p.nama; 
+        document.getElementById('selectKategoriProduk').value = p.kategori; 
+        document.getElementById('inputModalProduk').value = p.modal; 
+        document.getElementById('inputJualProduk').value = p.jual; 
         
-        if (elNama) elNama.value = produk.nama || '';
-        if (elHarga) elHarga.value = produk.harga || '';
-        if (elGudang) elGudang.value = produk.stokGudang || '';
-        if (elBatas) elBatas.value = produk.batasMinimum || '';
+        // 3. Mengisi form gudang
+        document.getElementById('inputStokGudang').value = p.stokGudang || 0;
+        document.getElementById('inputBatasMinimum').value = p.batasMinimum || 10;
         
-        window.editingIndex = i;
+        // 4. Kalkulasi otomatis & ubah tombol
+        hitungMarginForm(); 
+        document.getElementById('btnSimpanProduk').innerText = "Update"; 
         
-        // Panggil fungsi pembuka modal bawaan aplikasi Anda jika ada
-        if (typeof openModalEdit === 'function') {
-            openModalEdit();
-        }
+        // 5. INI YANG KETINGGALAN: Munculkan Modalnya!
+        document.getElementById('modalKelolaProduk').classList.add('active');
     }
-
-    function hapusProdukMaster(namaProduk) { 
-        if(confirm(`Yakin ingin menghapus produk "${namaProduk}" secara permanen dari Master?`)) { 
-            
-            // Hapus dari array lokal menggunakan nama
-            masterProduk = masterProduk.filter(p => p.nama !== namaProduk); 
-            
-            catatAktivitas('Master Produk', `Menghapus produk "${namaProduk}" dari daftar Master Produk`);
-            
-            if(db) {
-                db.collection('appData').doc('masterProduk').set({ list: masterProduk })
-                  .then(() => {
-                      console.log("Berhasil dihapus permanen dari database.");
-                      renderTabelMasterProduk(); 
-                  })
-                  .catch((err) => {
-                      console.error("Gagal menghapus dari database:", err);
-                      alert("Gagal menghapus produk dari database.");
-                  });
-            } else {
-                renderTabelMasterProduk();
-            }
+    
+    function hapusProdukMaster(i) { 
+        if(confirm("Hapus produk dari master?")) { 
+            const namaProd = masterProduk[i]?.nama || 'Produk';
+            masterProduk.splice(i, 1); 
+            catatAktivitas('Master Produk', `Menghapus produk "${namaProd}" dari daftar Master Produk`);
+            if(db) db.collection('appData').doc('masterProduk').set({ list: masterProduk }); 
+            renderTabelMasterProduk(); 
         } 
     }
     function hapusProduk(i) { if(isDataLocked(document.getElementById('tglOps').value)) return; if(confirm("Sembunyikan produk ini dari daftar hari ini?")) { const tgl = document.getElementById('tglOps').value; dbStok[tgl].splice(i,1); if(db) db.collection('stokHarian').doc(tgl).set({items: dbStok[tgl]}); renderTabelMatriks(); updateKalkulasi(); } }
