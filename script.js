@@ -2027,9 +2027,9 @@ function terapkanFilterReseller() {
             else el.style.display = "none";
         }
     }
-</script>
 
-<script>
+
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
@@ -2037,9 +2037,9 @@ function terapkanFilterReseller() {
                 .catch(err => console.log('PWA Gagal:', err));
         });
     }
-</script>
 
-<script>
+
+
     function hitungOtomatis(elemen) {
         let nilai = elemen.value;
         if (nilai.includes('+') || nilai.includes('-') || nilai.includes('=')) {
@@ -2061,9 +2061,9 @@ function terapkanFilterReseller() {
         if (nilai.includes('+') || nilai.includes('-') || nilai.includes('=')) { return; }
         if (typeof formatRibuanInput === 'function') { formatRibuanInput(elemen); }
     }
-</script>
 
-<script>
+
+
 function exportProdukKeExcel() {
     let dataTarget = null;
     if (typeof masterProduk !== 'undefined' && Array.isArray(masterProduk) && masterProduk.length > 0) {
@@ -2101,9 +2101,9 @@ function exportProdukKeExcel() {
     document.body.removeChild(link);
 }
 function cetakPDFProduk() { window.print(); }
-</script>
 
-<script>
+
+
     const urlParams = new URLSearchParams(window.location.search);
     const isDeveloper = urlParams.get('mode') === 'bos' || window.location.hostname === 'localhost';
 
